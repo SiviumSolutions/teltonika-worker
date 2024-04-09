@@ -1,5 +1,3 @@
-# .github/workflows/release.yml
-
 on:
   release:
     types: [created]
@@ -13,14 +11,29 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - target: x86_64-unknown-linux-musl
+          - target: mipsel-unknown-linux-uclibc
+            archive: tar.gz
+          - target: mips-unknown-linux-musl
             archive: tar.gz
     steps:
       - uses: actions/checkout@master
-      - name: Compile and release
+      - name: Setup Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          override: true
+          components: rust-src
+      - name: Compile and release for mipsel-unknown-linux-uclibc
+        if: matrix.target == 'mipsel-unknown-linux-uclibc'
         uses: rust-build/rust-build.action@v1.4.5
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           RUSTTARGET: ${{ matrix.target }}
           ARCHIVE_TYPES: ${{ matrix.archive }}
+      - name: Compile and release for mips-unknown-linux-musl
+        if: matrix.target == 'mips-unknown-linux-musl'
+        run: |
+          cargo +nightly build -Z build-std --target mips-unknown-linux-musl
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
