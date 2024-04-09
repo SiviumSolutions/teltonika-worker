@@ -11,8 +11,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - target: mipsel-unknown-linux-uclibc
-            archive: tar.gz
           - target: mips-unknown-linux-musl
             archive: tar.gz
     steps:
