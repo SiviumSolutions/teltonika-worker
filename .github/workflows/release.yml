@@ -25,7 +25,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y gcc-mips-linux-gnu libc6-dev-mips-cross
       - name: Build for MIPS
         run: |
-          cargo +nightly build -Z build-std --target mips-unknown-linux-musl
+          RUSTFLAGS="-C target-feature=+soft-float" cargo +nightly build -Z build-std --target mips-unknown-linux-musl
         env:
           CC_mips_unknown_linux_musl: mips-linux-gnu-gcc
           CARGO_TARGET_MIPS_UNKNOWN_LINUX_MUSL_LINKER: mips-linux-gnu-gcc
