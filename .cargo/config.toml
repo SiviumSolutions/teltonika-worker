@@ -1,2 +1,0 @@
-[target.mips-unknown-linux-musl]
-linker = "mips-linux-musl-gcc"

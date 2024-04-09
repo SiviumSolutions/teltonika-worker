@@ -15,23 +15,17 @@ jobs:
             archive: tar.gz
     steps:
       - uses: actions/checkout@master
-      - name: Setup Rust toolchain
+      - name: Set up Rust
         uses: actions-rs/toolchain@v1
         with:
           toolchain: nightly
           override: true
           components: rust-src
-      - name: Compile and release for mipsel-unknown-linux-uclibc
-        if: matrix.target == 'mipsel-unknown-linux-uclibc'
-        uses: rust-build/rust-build.action@v1.4.5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          RUSTTARGET: ${{ matrix.target }}
-          ARCHIVE_TYPES: ${{ matrix.archive }}
-      - name: Compile and release for mips-unknown-linux-musl
-        if: matrix.target == 'mips-unknown-linux-musl'
+      - name: Install MIPS cross-compilation tools
+        run: sudo apt-get update && sudo apt-get install -y gcc-mips-linux-gnu libc6-dev-mips-cross
+      - name: Build for MIPS
         run: |
           cargo +nightly build -Z build-std --target mips-unknown-linux-musl
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CC_mips_unknown_linux_musl: mips-linux-gnu-gcc
+          CARGO_TARGET_MIPS_UNKNOWN_LINUX_MUSL_LINKER: mips-linux-gnu-gcc
